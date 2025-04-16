@@ -32,7 +32,7 @@ namespace GloboTicket.TicketManagement.Application.Features.Events.Commands.Crea
 
             @event = await _eventRepository.AddAsync(@event);
 
-            return @event.Id;
+            return @event.EventId;
         }
     }
 }
