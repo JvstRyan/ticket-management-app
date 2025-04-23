@@ -1,44 +1,38 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using GloboTicket.TicketManagement.Application.Contracts.Persistence;
+using GloboTicket.TicketManagement.Application.Features.Categories.Commands.CreateCategory;
 using GloboTicket.TicketManagement.Domain.Entities;
 using MediatR;
 
-namespace GloboTicket.TicketManagement.Application.Features.Categories.Commands.CreateCategory
+namespace GloboTicket.TicketManagement.Application.Features.Categories.Commands.CreateCateogry
 {
     public class CreateCategoryCommandHandler : IRequestHandler<CreateCategoryCommand, CreateCategoryCommandResponse>
     {
         private readonly IAsyncRepository<Category> _categoryRepository;
         private readonly IMapper _mapper;
-        public CreateCategoryCommandHandler(IAsyncRepository<Category> categoryRepository, IMapper mapper)
+
+        public CreateCategoryCommandHandler(IMapper mapper, IAsyncRepository<Category> categoryRepository)
         {
-            _categoryRepository = categoryRepository;
             _mapper = mapper;
+            _categoryRepository = categoryRepository;
         }
 
-        async Task<CreateCategoryCommandResponse> IRequestHandler<CreateCategoryCommand, CreateCategoryCommandResponse>.Handle(CreateCategoryCommand request, CancellationToken cancellationToken)
+        public async Task<CreateCategoryCommandResponse> Handle(CreateCategoryCommand request, CancellationToken cancellationToken)
         {
             var createCategoryCommandResponse = new CreateCategoryCommandResponse();
 
             var validator = new CreateCategoryCommandValidator();
-            var validationResults = validator.Validate(request);
+            var validationResult = await validator.ValidateAsync(request);
 
-            if (validationResults.Errors.Count > 0)
+            if (validationResult.Errors.Count > 0)
             {
                 createCategoryCommandResponse.Success = false;
                 createCategoryCommandResponse.ValidationErrors = new List<string>();
-                
-                foreach (var error in validationResults.Errors)
+                foreach (var error in validationResult.Errors)
                 {
                     createCategoryCommandResponse.ValidationErrors.Add(error.ErrorMessage);
                 }
-
             }
-
             if (createCategoryCommandResponse.Success)
             {
                 var category = new Category() { Name = request.Name };
@@ -47,7 +41,6 @@ namespace GloboTicket.TicketManagement.Application.Features.Categories.Commands.
             }
 
             return createCategoryCommandResponse;
-
         }
     }
 }
