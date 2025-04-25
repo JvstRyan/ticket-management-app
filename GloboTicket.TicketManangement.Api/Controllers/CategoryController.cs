@@ -3,6 +3,7 @@ using GloboTicket.TicketManagement.Application.Features.Categories.Commands.Crea
 using GloboTicket.TicketManagement.Application.Features.Categories.Queries.GetCategoriesList;
 using GloboTicket.TicketManagement.Application.Features.Categories.Queries.GetCategoriesListWithEvents;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GloboTicket.TicketManangement.Api.Controllers
@@ -39,6 +40,7 @@ namespace GloboTicket.TicketManangement.Api.Controllers
         }
 
         [HttpPost(Name = "AddCategory")]
+        [Authorize]
         public async Task<ActionResult<CreateCategoryCommandResponse>> Create([FromBody] CreateCategoryCommand createCategoryCommand)
         {
             var response = await _mediator.Send(createCategoryCommand);
