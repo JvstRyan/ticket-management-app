@@ -1,6 +1,9 @@
 ﻿using GloboTicket.TicketManagement.Application;
+using GloboTicket.TicketManagement.Application.Contracts;
 using GloboTicket.TicketManagement.Infrastructure;
 using GloboTicket.TicketManagement.Persistence;
+using GloboTicket.TicketManangement.Api.Middleware;
+using GloboTicket.TicketManangement.Api.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace GloboTicket.TicketManangement.Api
@@ -12,6 +15,10 @@ namespace GloboTicket.TicketManangement.Api
             builder.Services.AddApplicationServices();
             builder.Services.AddInfrastructureServices(builder.Configuration);
             builder.Services.AddPersistenceServices(builder.Configuration);
+
+            builder.Services.AddScoped<ILoggedInUserService, LoggedInUserService>();
+
+            builder.Services.AddHttpContextAccessor();
 
             builder.Services.AddControllers();
 
@@ -40,6 +47,8 @@ namespace GloboTicket.TicketManangement.Api
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+
+            app.UseCustomExceptionHandler();
 
             app.UseHttpsRedirection();
             app.MapControllers();
